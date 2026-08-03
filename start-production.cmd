@@ -1,6 +1,5 @@
 @echo off
-
-cd /d C:\Users\Administrator\my-next-app
+cd /d "%~dp0"
 
 if not exist logs mkdir logs
 
