@@ -193,5 +193,113 @@ export const openApiDocument = {
         },
       },
     },
+
+    "/api/rtig/priority/file": {
+      post: {
+        tags: ["RTIG"],
+        summary: "Upload an RTIG priority XML file",
+        description:
+          "Accepts an XML file using multipart/form-data. The uploaded XML is processed using the same validation, storage and TCP-forwarding pipeline as the raw XML endpoint.",
+        operationId: "uploadRtigPriorityFile",
+
+        parameters: [
+          {
+            name: "Correlation-Id",
+            in: "header",
+            required: false,
+            description:
+              "Optional request tracking identifier. A UUID is generated when omitted.",
+            schema: {
+              type: "string",
+            },
+            example: "SWAGGER-FILE-TEST-001",
+          },
+        ],
+
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                required: ["file"],
+                properties: {
+                  file: {
+                    type: "string",
+                    format: "binary",
+                    description:
+                      "RTIG XML file containing one or multiple rtig_tlp records. Maximum size: 1 MB.",
+                  },
+                },
+              },
+              encoding: {
+                file: {
+                  contentType: "application/xml, text/xml",
+                },
+              },
+            },
+          },
+        },
+
+        responses: {
+          "200": {
+            description:
+              "The XML file was validated, stored and forwarded through TCP",
+            content: {
+              "application/xml": {
+                schema: {
+                  type: "string",
+                },
+              },
+            },
+          },
+
+          "400": {
+            description:
+              "Missing file, empty file, invalid form data or invalid XML",
+            content: {
+              "application/xml": {
+                schema: {
+                  type: "string",
+                },
+              },
+            },
+          },
+
+          "413": {
+            description: "The uploaded XML file exceeds 1 MB",
+            content: {
+              "application/xml": {
+                schema: {
+                  type: "string",
+                },
+              },
+            },
+          },
+
+          "415": {
+            description: "Unsupported request or file type",
+            content: {
+              "application/xml": {
+                schema: {
+                  type: "string",
+                },
+              },
+            },
+          },
+
+          "500": {
+            description: "Storage or TCP-forwarding failure",
+            content: {
+              "application/xml": {
+                schema: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 } as const;
